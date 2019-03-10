@@ -1,7 +1,7 @@
 #!/usr/bin/env make
 MAKEFLAGS += --silent
 SHELL := /usr/bin/env bash
-DOCKER_HUB_IMAGE_NAME := carlosnunez/cucumber
+DOCKER_IMAGE_NAME := cucumber
 define DOCKER_IMAGE_TAGS
 alpine-$(shell git rev-parse HEAD | head -c8)
 alpine-latest
@@ -35,8 +35,10 @@ deploy:
 	fi; \
 	for tag in $$DOCKER_IMAGE_TAGS; \
 	do \
-		docker tag cucumber:latest "$$(sed -n '/DOCKER_HUB_USERNAME/s/DOCKER_HUB_USERNAME=//gp' .env):$$tag" && \
-		docker push $(DOCKER_HUB_IMAGE_NAME):$$tag ; \
+		docker tag cucumber:latest \
+			"$$(sed -n '/DOCKER_HUB_USERNAME/s/DOCKER_HUB_USERNAME=//gp' .env)/$(DOCKER_IMAGE_NAME):$$tag" && \
+		docker push \
+			$$(sed -n '/DOCKER_HUB_USERNAME/s/DOCKER_HUB_USERNAME=//gp' .env)/$(DOCKER_IMAGE_NAME):$$tag ; \
 	done; \
 	$(MAKE) clean
 
@@ -44,7 +46,8 @@ clean:
 	rm .env; \
 	for tag in $$DOCKER_IMAGE_TAGS; \
 	do \
-		docker rmi -f $(DOCKER_HUB_IMAGE_NAME):$$tag ; \
+		docker rmi \
+			$$(sed -n '/DOCKER_HUB_USERNAME/s/DOCKER_HUB_USERNAME=//gp' .env)/$(DOCKER_IMAGE_NAME):$$tag ; \
 	done; \
 	docker rmi -f cucumber:latest; \
 
