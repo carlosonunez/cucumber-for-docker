@@ -1,0 +1,22 @@
+---
+resources:
+  repositories:
+  - repository: cucumber-for-docker
+    type: github
+    name: carlosonunez/cucumber-for-docker
+trigger:
+  branches:
+    include:
+      - master
+    exclude:
+      - develop
+  paths:
+    exclude:
+      - README.md
+      - .gitignore
+pr: none
+jobs:
+  - job: deploy_image
+    displayName: Deploy the Docker Image
+    steps:
+      - script: make deploy
